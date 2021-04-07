@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { Post, User, Comment, Vote } = require("../../models");
 const sequelize = require("../../config/connection");
+const withAuth = require("../../utils/auth");
 
 // get all users
 router.get("/", (req, res) => {
@@ -89,8 +90,7 @@ router.get("/:id", (req, res) => {
 });
 
 // POST /api/post
-router.post("/", (req, res) => {
-  // expects {username: 'Lernantino', email: 'lernantino@gmail.com', password: 'password1234'}
+router.post("/", withAuth, (req, res) => {
   Post.create({
     title: req.body.title,
     post_url: req.body.post_url,
@@ -104,7 +104,7 @@ router.post("/", (req, res) => {
 });
 
 // PUT /api/posts/upvote
-router.put("/upvote", (req, res) => {
+router.put("/upvote", withAuth, (req, res) => {
   // make sure the session exists first
   if (req.session) {
     // pass session id along with all destructured properties on req.body
@@ -121,7 +121,7 @@ router.put("/upvote", (req, res) => {
 });
 
 // PUT /api/users/1
-router.put("/:id", (req, res) => {
+router.put("/:id", withAuth, (req, res) => {
   // if req.body has exact key/value pairs to match the model, you can just use `req.body` instead
   Post.update(
     {
@@ -146,7 +146,7 @@ router.put("/:id", (req, res) => {
     });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", withAuth, (req, res) => {
   Post.destroy({
     where: {
       id: req.params.id,
